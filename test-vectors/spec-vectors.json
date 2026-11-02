@@ -15,7 +15,8 @@
     "plaintext": "68656c6c6f",
     "chk_key": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
     "ciphertext": "c65308d9c8649ff1c59820d0b3a030db34ad00f92d",
-    "blob_hash": "70b977414934faa6270f323f117d05dbcc412e9d7ba2354b4d0f88f60aad2461"
+    "blob_hash": "70b977414934faa6270f323f117d05dbcc412e9d7ba2354b4d0f88f60aad2461",
+    "encoded_key": "012cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
   },
   {
     "name": "empty-directory",
@@ -55,19 +56,19 @@
         {
           "h": "abababababababababababababababababababababababababababababababab",
           "m": {
+            "2": 2,
+            "10": 10,
             "values": [
               1.5,
-              -0.0,
+              0,
               4294967296
             ],
             "nested": {
+              "2": 0,
+              "10": 1,
               "𐀀": "astral",
-              "": "bmp",
-              "2": -0.0,
-              "10": 1.0
-            },
-            "2": 2,
-            "10": 10
+              "": "bmp"
+            }
           },
           "n": "x",
           "s": 0,
@@ -140,5 +141,73 @@
     "root_hash": "abababababababababababababababababababababababababababababababab",
     "payload": "0020abababababababababababababababababababababababababababababababab",
     "nhash": "nhash1qqs2h2at4w46h2at4w46h2at4w46h2at4w46h2at4w46h2at4w46h2cym3cqn"
+  },
+  {
+    "name": "rnd-hello",
+    "kind": "rnd",
+    "document": "specs/01-chk-encryption.md",
+    "plaintext": "68656c6c6f",
+    "raw_key": "0202020202020202020202020202020202020202020202020202020202020202",
+    "nonce": "000102030405060708090a0b",
+    "encoded_key": "020202020202020202020202020202020202020202020202020202020202020202",
+    "ciphertext": "000102030405060708090a0b216d8e96be582844fc3a4e2a23eecfbe1a29cd5b6b",
+    "blob_hash": "819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7b"
+  },
+  {
+    "name": "mixed-suite-directory",
+    "kind": "manifest",
+    "document": "specs/05-migration.md",
+    "node": {
+      "l": [
+        {
+          "h": "70b977414934faa6270f323f117d05dbcc412e9d7ba2354b4d0f88f60aad2461",
+          "k": "012cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+          "n": "chk",
+          "s": 5,
+          "t": 0
+        },
+        {
+          "h": "70b977414934faa6270f323f117d05dbcc412e9d7ba2354b4d0f88f60aad2461",
+          "k": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+          "n": "legacy",
+          "s": 5,
+          "t": 0
+        },
+        {
+          "h": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+          "n": "plain",
+          "s": 5,
+          "t": 0
+        },
+        {
+          "h": "819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7b",
+          "k": "020202020202020202020202020202020202020202020202020202020202020202",
+          "n": "rnd",
+          "s": 5,
+          "t": 0
+        }
+      ],
+      "t": 2
+    },
+    "msgpack": "82a16c9485a168c42070b977414934faa6270f323f117d05dbcc412e9d7ba2354b4d0f88f60aad2461a16bc421012cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824a16ea363686ba17305a1740085a168c42070b977414934faa6270f323f117d05dbcc412e9d7ba2354b4d0f88f60aad2461a16bc4202cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824a16ea66c6567616379a17305a1740084a168c4202cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824a16ea5706c61696ea17305a1740085a168c420819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7ba16bc421020202020202020202020202020202020202020202020202020202020202020202a16ea3726e64a17305a17400a17402",
+    "hash": "79692ea9885a662e5a416f68d4dfec42c6198e329cb3dce7cb6d53e68d13ad98"
+  },
+  {
+    "name": "nhash-rnd",
+    "kind": "nhash",
+    "document": "specs/04-references.md",
+    "root_hash": "819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7b",
+    "encoded_key": "020202020202020202020202020202020202020202020202020202020202020202",
+    "payload": "0020819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7b0521020202020202020202020202020202020202020202020202020202020202020202",
+    "nhash": "nhash1qqsgrxe6224z259hvgue9xvf9f4kzwmsw8zhm9tc0gv32vg2l4g0c7c9yypqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsc04s6l"
+  },
+  {
+    "name": "link-private-rnd",
+    "kind": "mask",
+    "document": "specs/04-references.md",
+    "encoded_key": "020202020202020202020202020202020202020202020202020202020202020202",
+    "secret": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+    "masked": "02030001060704050a0b08090e0f0c0d12131011161714151a1b18191e1f1c1d22",
+    "key_id": "5d8fcfefa9aeeb71"
   }
 ]

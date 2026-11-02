@@ -45,7 +45,7 @@ Each link is a map with these fields:
 | Key | Type   | Required | Meaning                                                                 |
 | --- | ------ | -------- | ----------------------------------------------------------------------- |
 | `h` | bin    | yes      | 32 byte Blossom hash of the linked object.                              |
-| `k` | bin    | no       | 32 byte client-side decryption key.                                     |
+| `k` | bin    | no       | 32-byte legacy or 33-byte versioned decryption key.                                     |
 | `m` | map    | no       | JSON-compatible metadata for the link.                                  |
 | `n` | string | yes      | Directory entry name.                                                   |
 | `s` | int    | yes      | Plaintext file size, or total descendant file bytes for directories.    |
@@ -53,7 +53,7 @@ Each link is a map with these fields:
 
 The link `t` is the type of the linked object. A link type equals the node type of the manifest it points at, except `t = 0`, which points at a raw Blossom blob that has no node type. Thus a `t = 2` link resolves to a `t = 2` directory node, a `t = 1` link resolves to a [`t = 1` file manifest](03-chunked-files-and-fanout.md), and a `t = 3` link resolves to a [`t = 3` directory-fanout node](03-chunked-files-and-fanout.md).
 
-The `k` field MAY contain a client-side decryption key, such as a [CHK key](01-chk-encryption.md). Clients MUST treat `k` as a bearer secret and MUST NOT send it to Blossom servers.
+The `k` field MAY contain a client-side decryption key, encoded according to the [encryption suite registry](01-chk-encryption.md). Clients MUST treat `k` as a bearer secret and MUST NOT send it to Blossom servers.
 
 For directory links where the total descendant file size is unknown, `s` SHOULD be `0`.
 

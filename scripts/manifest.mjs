@@ -52,9 +52,10 @@ function string(value) {
   return concat([header(bytes.length, 0, 0, 0xda, 0xdb), bytes]);
 }
 
-function binary(hex) {
-  assert.match(hex, /^[0-9a-f]{64}$/, 'Hashes and keys must be 32 bytes');
-  return concat([Buffer.from([0xc4, 32]), Buffer.from(hex, 'hex')]);
+function binary(hex, key = false) {
+  assert.match(hex, key ? /^(?:0[12])?[0-9a-f]{64}$/ : /^[0-9a-f]{64}$/);
+  const bytes = Buffer.from(hex, 'hex');
+  return concat([Buffer.from([0xc4, bytes.length]), bytes]);
 }
 
 function array(values) {
@@ -91,7 +92,7 @@ function link(value) {
     if (!Object.hasOwn(value, key)) continue;
     const encode = key === 'h' || key === 'k' ? binary
       : key === 'm' ? metadata : key === 'n' ? string : integer;
-    fields.push([key, encode(value[key])]);
+    fields.push([key, encode(value[key], key === 'k')]);
   }
   return map(fields);
 }

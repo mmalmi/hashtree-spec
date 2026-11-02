@@ -35,7 +35,7 @@ Each link in a file manifest has these fields:
 | Key | Type | Required | Meaning                                                            |
 | --- | ---- | -------- | ------------------------------------------------------------------ |
 | `h` | bin  | yes      | 32 byte Blossom hash of the linked object.                         |
-| `k` | bin  | no       | 32 byte client-side decryption key.                                |
+| `k` | bin  | no       | 32-byte legacy or 33-byte versioned object key.                                |
 | `s` | int  | yes      | Plaintext byte length represented by this link.                    |
 | `t` | int  | yes      | Link type: `0` for a leaf chunk, `1` for another file manifest.    |
 

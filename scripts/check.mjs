@@ -26,6 +26,10 @@ for (const vector of vectors) {
     const plaintext = Buffer.from(vector.plaintext, 'hex');
     const key = sha256(plaintext);
     assert.equal(key.toString('hex'), vector.chk_key);
+    if (vector.encoded_key) {
+      assert.equal(vector.encoded_key, '01' + vector.chk_key);
+      assert(document.includes(`versioned_chk_key: ${vector.encoded_key}`));
+    }
     const aes = hkdfSync('sha256', key, 'hashtree-chk', 'encryption-key', 32);
     const cipher = createCipheriv('aes-256-gcm', aes, Buffer.alloc(12));
     const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final(), cipher.getAuthTag()]);
@@ -43,9 +47,31 @@ for (const vector of vectors) {
     for (const field of ['chk_key', 'ciphertext', 'blob_hash']) {
       assert(document.includes(`${field}: ${vector[field]}`));
     }
+  } else if (vector.kind === 'rnd') {
+    const key = Buffer.from(vector.raw_key, 'hex');
+    const nonce = Buffer.from(vector.nonce, 'hex');
+    const plain = Buffer.from(vector.plaintext, 'hex');
+    assert.equal(vector.encoded_key, '02' + vector.raw_key);
+    assert.equal(nonce.length, 12);
+    const cipher = createCipheriv('aes-256-gcm', key, nonce);
+    const stored = Buffer.concat([nonce, cipher.update(plain), cipher.final(), cipher.getAuthTag()]);
+    assert.equal(stored.toString('hex'), vector.ciphertext);
+    assert.equal(sha256(stored).toString('hex'), vector.blob_hash);
+    const decipher = createDecipheriv('aes-256-gcm', key, stored.subarray(0, 12));
+    decipher.setAuthTag(stored.subarray(-16));
+    assert.deepEqual(Buffer.concat([decipher.update(stored.subarray(12, -16)), decipher.final()]), plain);
+    for (const value of [vector.ciphertext, vector.blob_hash, vector.encoded_key]) assert(document.includes(value));
+  } else if (vector.kind === 'mask') {
+    const key = Buffer.from(vector.encoded_key, 'hex');
+    const secret = Buffer.from(vector.secret, 'hex');
+    assert.equal(key.length, secret.length);
+    assert.equal(key.map((x, i) => x ^ secret[i]).toString('hex'), vector.masked);
+    assert.equal(sha256(secret).subarray(0, 8).toString('hex'), vector.key_id);
+    for (const value of [vector.masked, vector.key_id, vector.secret]) assert(document.includes(value));
   } else if (vector.kind === 'nhash') {
     assert.match(vector.root_hash, /^[0-9a-f]{64}$/);
-    assert.equal(vector.payload, '0020' + vector.root_hash);
+    const keyTlv = vector.encoded_key ? '0521' + vector.encoded_key : '';
+    assert.equal(vector.payload, '0020' + vector.root_hash + keyTlv);
     assert.equal(encodeBech32('nhash', Buffer.from(vector.payload, 'hex')), vector.nhash);
     for (const field of ['root_hash', 'payload', 'nhash']) {
       assert(document.includes(`${field}: ${vector[field]}`));
@@ -56,7 +82,7 @@ for (const vector of vectors) {
   console.log(`PASS ${vector.name}`);
 }
 
-assert.equal(vectors.length, 8, 'Update the expected count when adding reviewed vectors');
+assert.equal(vectors.length, 12, 'Update the expected count when adding reviewed vectors');
 const docs = ['README.md', 'CONTRIBUTING.md', ...readdirSync(resolve(root, 'specs')).map(name => `specs/${name}`)];
 let links = 0;
 for (const path of docs) {
@@ -75,7 +101,7 @@ for (const path of docs) {
 
 const sources = JSON.parse(read('sources.json'));
 assert.equal(sources.proposals.length, 4);
-for (const source of [...sources.proposals, sources.license, sources.implementation]) {
+for (const source of [...sources.proposals, sources.license, sources.implementation, sources.encryption_suites]) {
   assert.match(source.revision, /^[0-9a-f]{40}$/);
   if (source.sha256) assert.match(source.sha256, /^[0-9a-f]{64}$/);
   if (source.destination) assert(existsSync(resolve(root, source.destination)));

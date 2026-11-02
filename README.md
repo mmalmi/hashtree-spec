@@ -1,7 +1,7 @@
 # Hashtree specification
 
 An implementation-independent specification for content-addressed files and
-directories, optional CHK encryption, and mutable Nostr references.
+directories, optional per-object encryption, and mutable Nostr references.
 
 This repository is the shared home for protocol review and interoperability
 vectors. Rust, TypeScript, and other implementations can refer to the same
@@ -26,10 +26,11 @@ implementation. It is not an adopted Blossom Upgrade Document or Nostr standard.
 The `htree` scheme, `nhash` prefix, media types, and kind `30064` remain
 experimental assignments.
 
-This edition retains **32-byte CHK keys**, typed directory fanout, and the
-documented legacy reader compatibility. Encryption is optional per object;
-libraries may encrypt by default, as the current Hashtree libraries do. The
-separate 33-byte suite-key and `rnd-v1` proposals are not part of this edition.
+This edition adopts **33-byte suite-prefixed keys**, with deterministic
+`chk-v1` and randomized `rnd-v1`, while retaining readers for legacy 32-byte
+CHK keys and references. New writes use the versioned format. Encryption is
+optional per object; libraries may continue encrypting by default.
+See [migration and compatibility](specs/05-migration.md).
 
 Implementations should identify the full specification commit they support.
 The `main` branch is an evolving draft; a library version is not a protocol
@@ -40,7 +41,7 @@ migration discussion before adoption.
 
 | Document | Scope |
 | --- | --- |
-| [CHK encryption](specs/01-chk-encryption.md) | Content-derived keys, stored ciphertext, validation, and vectors |
+| [Object encryption](specs/01-chk-encryption.md) | Suite registry, CHK and randomized encryption, validation, and vectors |
 | [Directory manifests](specs/02-directory-manifests.md) | Shared MessagePack encoding, canonical metadata, and named entries |
 | [Chunked files and directory fanout](specs/03-chunked-files-and-fanout.md) | Ordered chunks, recursive files, and typed directory indexes |
 | [References](specs/04-references.md) | `htree` URLs, `nhash`, Nostr roots, and visibility |
@@ -71,7 +72,7 @@ node scripts/check.mjs
 ```
 
 The check uses only Node's standard library. It independently encodes the
-manifest vectors, reproduces CHK encryption and decryption, checks the Bech32
+manifest vectors, reproduces CHK and randomized encryption, checks link-key masks and Bech32
 reference, and checks document links and vector consistency. It is a focused
 vector check, not a complete conformance suite for a library or transport.
 
@@ -106,8 +107,9 @@ form for link secrets. It also distinguishes raw immutable blob references from
 manifest traversal and states the existing public-serving boundary.
 
 hzrd149's [separate rewrite](https://github.com/hzrd149/blossom/tree/hashtree/implementations/hashtree)
-is related design work and a useful source for future review. This edition is
-based on the proposal revisions above, not that rewrite. The original PRs
+contributes the optional encryption suites adopted in this draft. The
+[migration document](specs/05-migration.md) records the retained compatibility
+and differences from that rewrite. The original PRs
 retain their review history and have not been closed by this extraction.
 
 ## License
