@@ -9,6 +9,8 @@ documents without depending on a particular library's API or release cycle.
 
 [GitHub](https://github.com/mmalmi/hashtree-spec) · [Hashtree](https://git.iris.to/#/npub1xdhnr9mrv47kkrn95k6cwecearydeh8e895990n3acntwvmgk2dsdeeycm/hashtree-spec)
 
+Rust and TypeScript libraries: [GitHub](https://github.com/mmalmi/hashtree) · [git.iris.to](https://git.iris.to/#/npub1xdhnr9mrv47kkrn95k6cwecearydeh8e895990n3acntwvmgk2dsdeeycm/hashtree)
+
 Clone from either host:
 
 ```sh
