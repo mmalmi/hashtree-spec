@@ -6,7 +6,7 @@
       "revision": "ef6c7fb4435530556fb32345eec010505bda017a",
       "path": "buds/15.md",
       "sha256": "8b25f6e42128e63272fc7d7524be0abdeebfb4542ff1fa4cf6c12f5785cbbfb8",
-      "destination": "specs/01-chk-encryption.md"
+      "destination": "specs/chk-encryption.md"
     },
     {
       "proposal": "https://github.com/hzrd149/blossom/pull/105",
@@ -14,7 +14,7 @@
       "revision": "2e0592995ada8220d4775e4f647ceb8f020a85c9",
       "path": "buds/16.md",
       "sha256": "59dd2341dc6ea7b694876c2380e573cc54e6abea1efc9c06e1a2679c575fb09c",
-      "destination": "specs/02-directory-manifests.md"
+      "destination": "specs/directory-manifests.md"
     },
     {
       "proposal": "https://github.com/hzrd149/blossom/pull/106",
@@ -22,7 +22,7 @@
       "revision": "1848f77c4a25b70d10a3963d66ba1c8aba1e4f2c",
       "path": "buds/17.md",
       "sha256": "5a9ca2a0a9c116198615245eee79b68eb37065c9e4413d3c45e66fac20f4dd76",
-      "destination": "specs/03-chunked-files-and-fanout.md"
+      "destination": "specs/chunked-files-and-fanout.md"
     },
     {
       "proposal": "https://github.com/hzrd149/blossom/pull/107",
@@ -30,7 +30,7 @@
       "revision": "018f3e32227cf8fd1fba8dff2d39d6e3370d2d52",
       "path": "buds/18.md",
       "sha256": "c001c99accb0f04253173ed33e3c5e2134e9f2a9b059204e73a7d43bc03d591b",
-      "destination": "specs/04-references.md"
+      "destination": "specs/references.md"
     }
   ],
   "license": {

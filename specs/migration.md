@@ -8,7 +8,9 @@ while retaining reads of existing Hashtree data.
 
 ## Scope and conformance
 
-Specifications 01–04 define the current format. This document exclusively
+The current format is defined in [Object encryption](chk-encryption.md),
+[Directory manifests](directory-manifests.md), [Chunked files and directory fanout](chunked-files-and-fanout.md),
+and [Hashtree references](references.md). This document exclusively
 defines historical formats, compatibility-reader requirements, and migration
 guidance. Its explicitly stated historical decoding rules supplement the
 current schemas; they do not change the current writer format. Readers of this
@@ -33,7 +35,7 @@ plaintext. Unknown suites and malformed keys MUST fail explicitly.
 
 For a legacy 32-byte key, all bytes are the CHK key material: use the HKDF,
 zero nonce, stored layout, and both hash checks defined for `chk-v1` in
-[Object encryption](01-chk-encryption.md). The missing suite prefix changes
+[Object encryption](chk-encryption.md). The missing suite prefix changes
 only key representation. Any hash, authentication, or plaintext-key equality
 failure MUST reject the object, even if its stored bytes resemble a manifest.
 
@@ -68,7 +70,7 @@ Owner recovery tags carry the corresponding 64-character root-key or
 link-secret hex string encrypted using NIP-44 version 2.
 
 Clients MAY also read kind `30078` root events that otherwise satisfy the
-mutable-root requirements in [Hashtree references](04-references.md). New root
+mutable-root requirements in [Hashtree references](references.md). New root
 events use kind `30064`.
 
 Historical 32-byte link secrets remain supported in `#k=<64-lowercase-hex>`

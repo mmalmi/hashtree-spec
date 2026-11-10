@@ -8,7 +8,7 @@ referenced stored bytes.
 
 Clients and gateways resolve `htree` references. Blossom servers only store the referenced blobs.
 
-This specification depends on [Object encryption](01-chk-encryption.md), [Directory manifests](02-directory-manifests.md), and [Chunked files and directory fanout](03-chunked-files-and-fanout.md).
+This specification depends on [Object encryption](chk-encryption.md), [Directory manifests](directory-manifests.md), and [Chunked files and directory fanout](chunked-files-and-fanout.md).
 
 ## Rationale
 
@@ -121,7 +121,7 @@ The payload is TLV encoded:
 | Type | Meaning                      | Namespace                        | Required |
 | ---- | ---------------------------- | -------------------------------- | -------- |
 | `0`  | 32 byte root manifest hash   | NIP-19 `special` primary value   | yes      |
-| `5`  | 33-byte suite-prefixed root key | [Hashtree references](04-references.md) local `nhash` assignment  | no       |
+| `5`  | 33-byte suite-prefixed root key | [Hashtree references](references.md) local `nhash` assignment  | no       |
 
 TLV records are encoded as:
 
@@ -141,11 +141,11 @@ To resolve an `htree` reference:
 
 1. Resolve the root from `npub` or `nhash`.
 2. Fetch the root object's stored bytes and verify their SHA-256 hash.
-3. Decrypt it locally using [Object encryption](01-chk-encryption.md) if the root has a key.
+3. Decrypt it locally using [Object encryption](chk-encryption.md) if the root has a key.
 4. For manifest traversal, decode and validate the root manifest. A raw blob
    with an empty path resolves directly to its plaintext bytes.
-5. Traverse the path using [Directory manifests](02-directory-manifests.md) directory rules and [Chunked files and directory fanout](03-chunked-files-and-fanout.md) file manifest rules.
-6. If a needed child object has a key, decrypt it locally using [Object encryption](01-chk-encryption.md).
+5. Traverse the path using [Directory manifests](directory-manifests.md) directory rules and [Chunked files and directory fanout](chunked-files-and-fanout.md) file manifest rules.
+6. If a needed child object has a key, decrypt it locally using [Object encryption](chk-encryption.md).
 
 An empty path resolves to the root object.
 
@@ -177,7 +177,7 @@ nhash: nhash1qqs2h2at4w46h2at4w46h2at4w46h2at4w46h2at4w46h2at4w46h2cym3cqn
 
 ### Versioned randomized root and link mask
 
-These fixtures use the randomized `hello` object from [Object encryption](01-chk-encryption.md). The fixed link secret is for testing only.
+These fixtures use the randomized `hello` object from [Object encryption](chk-encryption.md). The fixed link secret is for testing only.
 
 ```text
 root_hash: 819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7b

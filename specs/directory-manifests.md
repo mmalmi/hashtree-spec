@@ -51,9 +51,9 @@ Each link is a map with these fields:
 | `s` | int    | yes      | Plaintext file size, or total descendant file bytes for directories.    |
 | `t` | int    | yes      | Link type: `0` for blob, `1` for file manifest, `2` for directory manifest, `3` for directory fanout. |
 
-The link `t` is the type of the linked object. A link type equals the node type of the manifest it points at, except `t = 0`, which points at a raw Blossom blob that has no node type. Thus a `t = 2` link resolves to a `t = 2` directory node, a `t = 1` link resolves to a [`t = 1` file manifest](03-chunked-files-and-fanout.md), and a `t = 3` link resolves to a [`t = 3` directory-fanout node](03-chunked-files-and-fanout.md).
+The link `t` is the type of the linked object. A link type equals the node type of the manifest it points at, except `t = 0`, which points at a raw Blossom blob that has no node type. Thus a `t = 2` link resolves to a `t = 2` directory node, a `t = 1` link resolves to a [`t = 1` file manifest](chunked-files-and-fanout.md), and a `t = 3` link resolves to a [`t = 3` directory-fanout node](chunked-files-and-fanout.md).
 
-The `k` field MAY contain a client-side decryption key, encoded according to the [encryption suite registry](01-chk-encryption.md). Clients MUST treat `k` as a bearer secret and MUST NOT send it to Blossom servers.
+The `k` field MAY contain a client-side decryption key, encoded according to the [encryption suite registry](chk-encryption.md). Clients MUST treat `k` as a bearer secret and MUST NOT send it to Blossom servers.
 
 For directory links where the total descendant file size is unknown, `s` SHOULD be `0`.
 
@@ -61,9 +61,9 @@ The `m` field MUST be a map with string keys and values from the metadata data m
 
 The `s` field MUST be an unsigned integer in the range `0` through `2^64 - 1`. Implementations MUST preserve integer values exactly or reject values they cannot represent; silently rounding them is not permitted.
 
-The `n` field is required for links in a `t = 2` directory manifest because those links are user-visible directory entries. [Chunked files and directory fanout](03-chunked-files-and-fanout.md) defines `t = 3` directory fanout nodes whose internal links omit `n`.
+The `n` field is required for links in a `t = 2` directory manifest because those links are user-visible directory entries. [Chunked files and directory fanout](chunked-files-and-fanout.md) defines `t = 3` directory fanout nodes whose internal links omit `n`.
 
-Link types `1` and `3` are defined by [Chunked files and directory fanout](03-chunked-files-and-fanout.md).
+Link types `1` and `3` are defined by [Chunked files and directory fanout](chunked-files-and-fanout.md).
 
 Readers MUST return an unsupported type error for unknown link or node types. They MUST NOT reinterpret an unknown type as a blob or another known manifest type.
 
@@ -131,8 +131,8 @@ To resolve a path from a directory manifest, clients SHOULD:
 4. Look up the next path segment by exact `n` match.
 5. Resolve `t = 2` links as directories.
 6. Resolve `t = 0` links as blobs.
-7. Resolve `t = 1` links as [Chunked files and directory fanout](03-chunked-files-and-fanout.md) file manifests, or return an unsupported type error.
-8. Resolve `t = 3` links as [Chunked files and directory fanout](03-chunked-files-and-fanout.md) directory fanout, or return an unsupported type error.
+7. Resolve `t = 1` links as [Chunked files and directory fanout](chunked-files-and-fanout.md) file manifests, or return an unsupported type error.
+8. Resolve `t = 3` links as [Chunked files and directory fanout](chunked-files-and-fanout.md) directory fanout, or return an unsupported type error.
 
 Clients MUST fetch linked objects by `h`. If `k` is present, clients MUST use it only locally.
 
