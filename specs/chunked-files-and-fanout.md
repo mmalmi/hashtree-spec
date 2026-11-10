@@ -6,7 +6,7 @@ This document defines deterministic manifests for large files and large director
 
 Clients upload file and fanout manifests as normal Blossom blobs. Servers do not need to implement this specification.
 
-This specification uses the MessagePack tree node encoding from [Directory manifests](02-directory-manifests.md):
+This specification uses the MessagePack tree node encoding from [Directory manifests](directory-manifests.md):
 
 - `t = 1` for file manifests.
 - `t = 2` for directory manifests.
@@ -35,7 +35,7 @@ Each link in a file manifest has these fields:
 | Key | Type | Required | Meaning                                                            |
 | --- | ---- | -------- | ------------------------------------------------------------------ |
 | `h` | bin  | yes      | 32 byte Blossom hash of the linked object.                         |
-| `k` | bin  | no       | 32-byte legacy or 33-byte versioned object key.                                |
+| `k` | bin  | no       | 33-byte suite-prefixed object key.                                |
 | `s` | int  | yes      | Plaintext byte length represented by this link.                    |
 | `t` | int  | yes      | Link type: `0` for a leaf chunk, `1` for another file manifest.    |
 
@@ -58,11 +58,12 @@ The plaintext file size is the sum of the root manifest link sizes.
 
 ## Directory Fanout
 
-[Directory manifests](02-directory-manifests.md) directory manifests (`t = 2`) contain user-visible named links. Large directories use directory fanout nodes (`t = 3`) whose links are unnamed internal children.
+[Directory manifests](directory-manifests.md) directory manifests (`t = 2`) contain user-visible named links. Large directories use directory fanout nodes (`t = 3`) whose links are unnamed internal children.
 
 Readers MUST flatten `t = 3` directory fanout nodes when listing or resolving a directory. Internal fanout links MUST NOT be exposed as user-visible entries.
 
-A `t = 2` directory manifest is always listed verbatim. A user-visible directory entry named `_chunk_0` or any other internal-looking name remains a normal entry.
+A `t = 2` directory manifest is always listed verbatim. Entry names have no
+special meaning and MUST NOT cause links to be interpreted as internal fanout.
 
 Each link in a `t = 3` fanout node MUST:
 
@@ -71,18 +72,16 @@ Each link in a `t = 3` fanout node MUST:
 3. Use `s` for total descendant file bytes, or `0` when unknown.
 4. Include metadata keys `count`, `first`, and `last` in `m`.
 
-`count` is the number of user-visible descendant entries in the child subtree and MUST be a positive integer. `first` and `last` are the first and last user-visible entry names in that subtree after the [Directory manifests](02-directory-manifests.md) bytewise name sort.
+`count` is the number of user-visible descendant entries in the child subtree and MUST be a positive integer. `first` and `last` are the first and last user-visible entry names in that subtree after the [Directory manifests](directory-manifests.md) bytewise name sort.
 
-Fanout links MUST be ordered by subtree order: ascending `first`, non-overlapping bounds, and adjacent subtrees covering the same sorted directory entry sequence that would appear in a flat [Directory manifests](02-directory-manifests.md) directory.
-
-Compatibility note: implementations MAY read older draft fanout nodes encoded as `t = 2` directories whose every link is a `t = 2` named `_chunk_<start>` link. New writers MUST use `t = 3`.
+Fanout links MUST be ordered by subtree order: ascending `first`, non-overlapping bounds, and adjacent subtrees covering the same sorted directory entry sequence that would appear in a flat [Directory manifests](directory-manifests.md) directory.
 
 ### Splitting Directories
 
 Canonical directory fanout:
 
 1. Sort all user-visible entries by ascending bytewise order of their UTF-8 encoded names.
-2. If the directory has at most `max_links` entries, publish it as a [directory manifest](02-directory-manifests.md).
+2. If the directory has at most `max_links` entries, publish it as a [directory manifest](directory-manifests.md).
 3. Split larger directories into consecutive batches of at most `max_links` entries.
 4. Create one child directory manifest per batch.
 5. Create a `t = 3` parent fanout node with one unnamed internal link per child.
@@ -120,7 +119,7 @@ Clients MUST verify every fetched blob against the hash from its link before usi
 
 Clients MUST reject file manifests with named links, `t = 3` fanout nodes with named links, `t = 3` fanout nodes with links other than `t = 2` or `t = 3`, duplicate user-visible names within a directory, or fanout metadata with missing or invalid `count`, `first`, or `last` bounds.
 
-Readers implementing only [directory manifests](02-directory-manifests.md) that encounter `t = 3` MUST return an unsupported type error rather than guessing another type.
+Readers implementing only [directory manifests](directory-manifests.md) that encounter `t = 3` MUST return an unsupported type error rather than guessing another type.
 
 ## Reference implementation
 

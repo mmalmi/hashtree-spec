@@ -2,7 +2,7 @@
   {
     "name": "chk-empty",
     "kind": "chk",
-    "document": "specs/01-chk-encryption.md",
+    "document": "specs/chk-encryption.md",
     "plaintext": "",
     "chk_key": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "ciphertext": "7cd161ae8406d82cdf553c1100d012db",
@@ -11,7 +11,7 @@
   {
     "name": "chk-hello",
     "kind": "chk",
-    "document": "specs/01-chk-encryption.md",
+    "document": "specs/chk-encryption.md",
     "plaintext": "68656c6c6f",
     "chk_key": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
     "ciphertext": "c65308d9c8649ff1c59820d0b3a030db34ad00f92d",
@@ -21,7 +21,7 @@
   {
     "name": "empty-directory",
     "kind": "manifest",
-    "document": "specs/02-directory-manifests.md",
+    "document": "specs/directory-manifests.md",
     "node": {
       "l": [],
       "t": 2
@@ -32,7 +32,7 @@
   {
     "name": "single-entry",
     "kind": "manifest",
-    "document": "specs/02-directory-manifests.md",
+    "document": "specs/directory-manifests.md",
     "node": {
       "l": [
         {
@@ -50,7 +50,7 @@
   {
     "name": "canonical-metadata",
     "kind": "manifest",
-    "document": "specs/02-directory-manifests.md",
+    "document": "specs/directory-manifests.md",
     "node": {
       "l": [
         {
@@ -83,7 +83,7 @@
   {
     "name": "chunked-file",
     "kind": "manifest",
-    "document": "specs/03-chunked-files-and-fanout.md",
+    "document": "specs/chunked-files-and-fanout.md",
     "node": {
       "l": [
         {
@@ -105,7 +105,7 @@
   {
     "name": "directory-fanout",
     "kind": "manifest",
-    "document": "specs/03-chunked-files-and-fanout.md",
+    "document": "specs/chunked-files-and-fanout.md",
     "node": {
       "l": [
         {
@@ -137,7 +137,7 @@
   {
     "name": "nhash-without-key",
     "kind": "nhash",
-    "document": "specs/04-references.md",
+    "document": "specs/references.md",
     "root_hash": "abababababababababababababababababababababababababababababababab",
     "payload": "0020abababababababababababababababababababababababababababababababab",
     "nhash": "nhash1qqs2h2at4w46h2at4w46h2at4w46h2at4w46h2at4w46h2at4w46h2cym3cqn"
@@ -145,7 +145,7 @@
   {
     "name": "rnd-hello",
     "kind": "rnd",
-    "document": "specs/01-chk-encryption.md",
+    "document": "specs/chk-encryption.md",
     "plaintext": "68656c6c6f",
     "raw_key": "0202020202020202020202020202020202020202020202020202020202020202",
     "nonce": "000102030405060708090a0b",
@@ -156,7 +156,7 @@
   {
     "name": "mixed-suite-directory",
     "kind": "manifest",
-    "document": "specs/05-migration.md",
+    "document": "specs/migration.md",
     "node": {
       "l": [
         {
@@ -195,7 +195,7 @@
   {
     "name": "nhash-rnd",
     "kind": "nhash",
-    "document": "specs/04-references.md",
+    "document": "specs/references.md",
     "root_hash": "819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7b",
     "encoded_key": "020202020202020202020202020202020202020202020202020202020202020202",
     "payload": "0020819b3a52aa2550b762399299892a6b613b7071c57d95787a1915310afd50fc7b0521020202020202020202020202020202020202020202020202020202020202020202",
@@ -204,7 +204,7 @@
   {
     "name": "link-private-rnd",
     "kind": "mask",
-    "document": "specs/04-references.md",
+    "document": "specs/references.md",
     "encoded_key": "020202020202020202020202020202020202020202020202020202020202020202",
     "secret": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
     "masked": "02030001060704050a0b08090e0f0c0d12131011161714151a1b18191e1f1c1d22",

@@ -2,7 +2,7 @@
 
 `draft`
 
-This document defines optional per-object encryption with explicit suites: deterministic `chk-v1` and randomized `rnd-v1`. Legacy unprefixed CHK keys remain readable.
+This document defines optional per-object encryption with explicit suites: deterministic `chk-v1` and randomized `rnd-v1`.
 
 Encryption is optional per object. An unencrypted object is stored as plaintext
 and addressed by its SHA-256 hash; it has no decryption key. Libraries MAY
@@ -17,15 +17,15 @@ An absent key means plaintext. A present key selects exactly one suite:
 
 | Encoded key | Suite | Stored bytes |
 | --- | --- | --- |
-| 32 bytes | Legacy CHK | AES-GCM ciphertext and 16-byte tag |
-| `01` followed by 32 bytes | `chk-v1` | Same CHK ciphertext and tag |
+| `01` followed by 32 bytes | `chk-v1` | AES-GCM ciphertext and 16-byte tag |
 | `02` followed by 32 bytes | `rnd-v1` | 12-byte nonce, ciphertext, 16-byte tag |
 
-New encrypted writes SHOULD use a 33-byte versioned key. Readers MUST accept
-legacy 32-byte CHK keys and both registered 33-byte suites. They MUST reject
-other lengths and unknown suite identifiers; they MUST NOT guess a suite or
-retry failed versioned decryption as plaintext. An empty key is invalid, not
-an indication of plaintext. The suite byte is part of the encoded key, not the
+The current format uses a 33-byte suite-prefixed key. Readers MUST accept
+both registered suites. Readers MAY also support the
+[legacy CHK key encoding](migration.md#new-writes-and-existing-data).
+They MUST reject unsupported lengths and unknown suite identifiers. They
+MUST NOT guess a suite or retry failed decryption as plaintext. An empty key
+is invalid. The suite byte is part of the encoded key, not the
 raw AES key or ciphertext.
 
 The suite is independent for every object, including manifests and chunks.
@@ -100,32 +100,13 @@ The stored ciphertext remains immutable and reusable by caches and peers.
 Randomized encryption does not hide object size, access patterns, or the reuse
 of an already published reference.
 
-## Legacy Blossom URI parameters
-
-The original CHK proposal defines `blossom:` URIs with these parameters:
-
-- `enc=chk-v1`
-- `k=<chk_key>` as 64 lowercase hex characters
-
-If `k` is present, `enc=chk-v1` MUST also be present.
-
-`k` is a bearer secret. Clients MUST NOT send it to Blossom servers.
-
-Example for plaintext `hello`:
-
-```text
-blossom:70b977414934faa6270f323f117d05dbcc412e9d7ba2354b4d0f88f60aad2461.txt?enc=chk-v1&k=2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
-```
-
-The extension SHOULD describe the plaintext.
-
 ## Security
 
 CHK reveals plaintext equality to anyone who can observe blob hashes or ciphertext.
 
 CHK is vulnerable to confirmation attacks for guessable plaintext. Do not use CHK alone for low-entropy secrets or content where equality leakage is unacceptable.
 
-Protect `k` like any decryption key.
+Encoded keys are bearer secrets and MUST NOT be sent to storage servers.
 
 ## Reference implementation
 
