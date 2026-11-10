@@ -32,12 +32,10 @@ continue encrypting by default.
 
 The specifications for object encryption, directory manifests, chunked files
 and directory fanout, and references define the current format.
-[Migration and compatibility](specs/migration.md) exclusively defines historical
-formats, additional compatibility-reader requirements, and migration guidance.
-Its historical decoding rules supplement the current
-schemas without changing the current writer format. Mandatory compatibility
-requirements remain part of reader conformance for this edition; historical
-implementation bugs are documentation, not reader exceptions.
+Readers can conform to this edition using only the current format. Readers MAY
+also support individual historical encodings. For each one they accept, they
+MUST follow its decoding and validation rules in
+[Migration and compatibility](specs/migration.md).
 
 Implementations should identify the full specification commit they support.
 The `main` branch is an evolving draft; a library version is not a protocol
@@ -52,7 +50,7 @@ migration discussion before adoption.
 | [Directory manifests](specs/directory-manifests.md) | Shared MessagePack encoding, canonical metadata, and named entries |
 | [Chunked files and directory fanout](specs/chunked-files-and-fanout.md) | Ordered chunks, recursive files, and typed directory indexes |
 | [References](specs/references.md) | `htree` URLs, `nhash`, Nostr roots, and visibility |
-| [Migration and compatibility](specs/migration.md) | Historical formats, compatibility-reader requirements, import guidance, and implementation history |
+| [Migration and compatibility](specs/migration.md) | Optional historical formats, their validation rules, and migration guidance |
 
 The capitalized requirement words in these documents use
 [BCP 14](https://www.rfc-editor.org/info/bcp14).
@@ -116,7 +114,7 @@ manifest traversal and states the existing public-serving boundary.
 
 hzrd149's [separate rewrite](https://github.com/hzrd149/blossom/tree/hashtree/implementations/hashtree)
 contributes the optional encryption suites adopted in this draft. The
-[migration document](specs/migration.md) records the retained compatibility
+[migration document](specs/migration.md) records the optional legacy formats
 and differences from that rewrite. The original PRs
 retain their review history and have not been closed by this extraction.
 

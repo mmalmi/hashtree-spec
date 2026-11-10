@@ -20,11 +20,12 @@ An absent key means plaintext. A present key selects exactly one suite:
 | `01` followed by 32 bytes | `chk-v1` | AES-GCM ciphertext and 16-byte tag |
 | `02` followed by 32 bytes | `rnd-v1` | 12-byte nonce, ciphertext, 16-byte tag |
 
-Encrypted objects use a 33-byte suite-prefixed key. Readers MUST accept
-both registered suites. They MUST reject
-other lengths and unknown suite identifiers; they MUST NOT guess a suite or
-retry failed decryption as plaintext. An empty key is invalid, not
-an indication of plaintext. The suite byte is part of the encoded key, not the
+The current format uses a 33-byte suite-prefixed key. Readers MUST accept
+both registered suites. Readers MAY also support the
+[legacy CHK key encoding](migration.md#new-writes-and-existing-data).
+They MUST reject unsupported lengths and unknown suite identifiers. They
+MUST NOT guess a suite or retry failed decryption as plaintext. An empty key
+is invalid. The suite byte is part of the encoded key, not the
 raw AES key or ciphertext.
 
 The suite is independent for every object, including manifests and chunks.
