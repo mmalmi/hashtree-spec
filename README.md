@@ -26,11 +26,16 @@ implementation. It is not an adopted Blossom Upgrade Document or Nostr standard.
 The `htree` scheme, `nhash` prefix, media types, and kind `30064` remain
 experimental assignments.
 
-This edition adopts **33-byte suite-prefixed keys**, with deterministic
-`chk-v1` and randomized `rnd-v1`, while retaining readers for legacy 32-byte
-CHK keys and references. New writes use the versioned format. Encryption is
-optional per object; libraries may continue encrypting by default.
-See [migration and compatibility](specs/05-migration.md).
+This edition uses **33-byte suite-prefixed keys**, with deterministic `chk-v1`
+and randomized `rnd-v1`. Encryption is optional per object; libraries may
+continue encrypting by default.
+
+Specifications 01–04 define the current format. Specification 05 exclusively
+defines historical formats, additional compatibility-reader requirements, and
+migration guidance. Its historical decoding rules supplement the current
+schemas without changing the current writer format. Mandatory compatibility
+requirements remain part of reader conformance for this edition; historical
+implementation bugs are documentation, not reader exceptions.
 
 Implementations should identify the full specification commit they support.
 The `main` branch is an evolving draft; a library version is not a protocol
@@ -45,6 +50,7 @@ migration discussion before adoption.
 | [Directory manifests](specs/02-directory-manifests.md) | Shared MessagePack encoding, canonical metadata, and named entries |
 | [Chunked files and directory fanout](specs/03-chunked-files-and-fanout.md) | Ordered chunks, recursive files, and typed directory indexes |
 | [References](specs/04-references.md) | `htree` URLs, `nhash`, Nostr roots, and visibility |
+| [Migration and compatibility](specs/05-migration.md) | Historical formats, compatibility-reader requirements, import guidance, and implementation history |
 
 The capitalized requirement words in these documents use
 [BCP 14](https://www.rfc-editor.org/info/bcp14).

@@ -35,7 +35,7 @@ Each link in a file manifest has these fields:
 | Key | Type | Required | Meaning                                                            |
 | --- | ---- | -------- | ------------------------------------------------------------------ |
 | `h` | bin  | yes      | 32 byte Blossom hash of the linked object.                         |
-| `k` | bin  | no       | 32-byte legacy or 33-byte versioned object key.                                |
+| `k` | bin  | no       | 33-byte suite-prefixed object key.                                |
 | `s` | int  | yes      | Plaintext byte length represented by this link.                    |
 | `t` | int  | yes      | Link type: `0` for a leaf chunk, `1` for another file manifest.    |
 
@@ -62,7 +62,8 @@ The plaintext file size is the sum of the root manifest link sizes.
 
 Readers MUST flatten `t = 3` directory fanout nodes when listing or resolving a directory. Internal fanout links MUST NOT be exposed as user-visible entries.
 
-A `t = 2` directory manifest is always listed verbatim. A user-visible directory entry named `_chunk_0` or any other internal-looking name remains a normal entry.
+A `t = 2` directory manifest is always listed verbatim. Entry names have no
+special meaning and MUST NOT cause links to be interpreted as internal fanout.
 
 Each link in a `t = 3` fanout node MUST:
 
@@ -74,8 +75,6 @@ Each link in a `t = 3` fanout node MUST:
 `count` is the number of user-visible descendant entries in the child subtree and MUST be a positive integer. `first` and `last` are the first and last user-visible entry names in that subtree after the [Directory manifests](02-directory-manifests.md) bytewise name sort.
 
 Fanout links MUST be ordered by subtree order: ascending `first`, non-overlapping bounds, and adjacent subtrees covering the same sorted directory entry sequence that would appear in a flat [Directory manifests](02-directory-manifests.md) directory.
-
-Compatibility note: implementations MAY read older draft fanout nodes encoded as `t = 2` directories whose every link is a `t = 2` named `_chunk_<start>` link. New writers MUST use `t = 3`.
 
 ### Splitting Directories
 

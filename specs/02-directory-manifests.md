@@ -45,7 +45,7 @@ Each link is a map with these fields:
 | Key | Type   | Required | Meaning                                                                 |
 | --- | ------ | -------- | ----------------------------------------------------------------------- |
 | `h` | bin    | yes      | 32 byte Blossom hash of the linked object.                              |
-| `k` | bin    | no       | 32-byte legacy or 33-byte versioned decryption key.                                     |
+| `k` | bin    | no       | 33-byte suite-prefixed decryption key.                                     |
 | `m` | map    | no       | JSON-compatible metadata for the link.                                  |
 | `n` | string | yes      | Directory entry name.                                                   |
 | `s` | int    | yes      | Plaintext file size, or total descendant file bytes for directories.    |
@@ -92,11 +92,12 @@ Integer inputs MUST be in the MessagePack range `-2^63` through `2^64 - 1`. Floa
 - Every other floating-point value MUST use float64 (`0xcb`), even if float32 could represent it exactly. For example, `1.5` encodes as `cb3ff8000000000000`.
 - Exact integer values MUST NOT be rounded through a floating-point conversion. Hosts with limited integer precision need an exact integer representation or MUST reject unsupported integers. In JavaScript, this includes using `bigint` for integers beyond the safe `number` range.
 
-### Reading Existing Manifests
+### Stored-byte Identity
 
-These encoding requirements apply to newly written manifests. Readers MAY also accept older encodings with different field order, longer length or integer headers, or alternative numeric representations. A blob's hash MUST always be checked against its original stored bytes, never against a decoded and re-encoded representation.
-
-Re-encoding a legacy manifest under these rules can change its hash and the hashes of ancestors that reference it. Existing references MUST continue to identify the original bytes; implementations MUST NOT silently replace those references with hashes of normalized manifests.
+A blob's hash MUST always be checked against its original stored bytes, never
+against a decoded and re-encoded representation. Existing references MUST
+continue to identify those bytes; implementations MUST NOT silently replace
+them with hashes of re-encoded manifests.
 
 ## Entry Names
 

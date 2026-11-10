@@ -79,7 +79,7 @@ The mutable form resolves through a Nostr kind `30064` parameterized replaceable
 - `hash` tag: 32 byte root manifest hash as 64 lowercase hex characters
 - optional `l` tag: `hashtree`
 
-Clients SHOULD publish new mutable roots as kind `30064`. For compatibility with older implementations, clients MAY also read kind `30078` events that otherwise match this section.
+Clients SHOULD publish mutable roots as kind `30064`.
 
 Clients MUST verify the event ID and signature before using a root event.
 Clients SHOULD use the latest valid event for the author and `d` tag according
@@ -94,25 +94,19 @@ For mutable tree traversal, the root hash MUST identify a directory manifest
 
 Mutable root events define three visibility scopes.
 
-Public roots either need no key, or publish the root key in a `key` tag as 64 (legacy) or 66 (versioned) lowercase hex characters. Anyone who can read the event can resolve the root.
+Public roots either need no key, or publish the root key in a `key` tag as 66 lowercase hex characters. Anyone who can read the event can resolve the root.
 
 Link-private roots publish:
 
-- `encryptedKey`: `root_key XOR link_key`, as 64 (legacy) or 66 (versioned) lowercase hex characters
+- `encryptedKey`: `root_key XOR link_key`, as 66 lowercase hex characters
 - `keyId`: first 8 bytes of `SHA256(link_key)`, as 16 lowercase hex characters
 
-The `link_key` has the same length as the encoded root key: 32 or 33 cryptographically random bytes. The XOR covers every byte, including the suite byte. A link secret or masked key is opaque and MUST NOT be parsed as an encryption key before unmasking. Link-private references
-SHOULD carry it in the URL fragment as `#k=<64-or-66-lowercase-hex>` or in client-local
+The `link_key` has the same length as the encoded root key: 33 cryptographically random bytes. The XOR covers every byte, including the suite byte. A link secret or masked key is opaque and MUST NOT be parsed as an encryption key before unmasking. Link-private references
+SHOULD carry it in the URL fragment as `#k=<66-lowercase-hex>` or in client-local
 state, matching the current Hashtree sharing profile. Clients compute
 `root_key = encryptedKey XOR link_key` and SHOULD verify `keyId` when present.
 
-The original proposal also allowed `k=<link_key>` in an `htree` query string.
-Clients MAY accept that compatibility form locally, but MUST remove the secret
-before any HTTP request. Conflicting fragment and query secrets MUST be
-rejected. An HTTP gateway MUST NOT interpret query parameters as decryption
-keys for public content serving.
-
-Owner-private roots publish `selfEncryptedKey`, containing the 64- or 66-character
+Owner-private roots publish `selfEncryptedKey`, containing the 66-character
 lowercase root-key hex string encrypted to the event author using NIP-44
 version 2. Only the owner can recover the root key.
 
@@ -127,7 +121,7 @@ The payload is TLV encoded:
 | Type | Meaning                      | Namespace                        | Required |
 | ---- | ---------------------------- | -------------------------------- | -------- |
 | `0`  | 32 byte root manifest hash   | NIP-19 `special` primary value   | yes      |
-| `5`  | 32-byte legacy or 33-byte versioned root key | [Hashtree references](04-references.md) local `nhash` assignment  | no       |
+| `5`  | 33-byte suite-prefixed root key | [Hashtree references](04-references.md) local `nhash` assignment  | no       |
 
 TLV records are encoded as:
 
@@ -140,8 +134,6 @@ value: length bytes
 Other TLV types are reserved for future `nhash` extensions. Types `1`, `2`, and `3` do not carry NIP-19 relay, author, or kind semantics in `nhash` unless a future revision explicitly defines them.
 
 Type `5` is intentionally local to `nhash` so the optional root key is not confused with NIP-19 relay, author, or kind fields.
-
-For compatibility, clients MUST decode legacy `nhash` values whose bech32 payload is exactly 32 bytes as the root manifest hash with no key. Any other payload length MUST be decoded as TLV.
 
 ## Tree Resolution
 
