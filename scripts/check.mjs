@@ -99,7 +99,7 @@ for (const vector of vectors) {
   console.log(`PASS ${vector.name}`);
 }
 
-assert.equal(vectors.length, 24, 'Update the expected count when adding reviewed vectors');
+assert.equal(vectors.length, 28, 'Update the expected count when adding reviewed vectors');
 const docs = ['README.md', 'CONTRIBUTING.md', ...readdirSync(resolve(root, 'specs')).map(name => `specs/${name}`)];
 let links = 0;
 for (const path of docs) {

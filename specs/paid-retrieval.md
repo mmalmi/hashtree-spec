@@ -8,19 +8,17 @@ The exchange does not depend on how its messages are carried or on how a provide
 
 ## Overview
 
-A client holds an **account** with each provider it pays: a random 32-byte id that the provider maps to a balance. The balance is everything credited from payments minus everything charged for delivered blobs. Most requests are one round trip against that balance; a payment is needed only when the balance runs out.
+A client holds an **account** with each provider it pays, which the provider maps to a balance. The balance is everything credited from payments minus everything charged for delivered blobs. On a carrier that authenticates the client, the account is the client's identity. Elsewhere it is a random 32-byte id that the client names in every request. Most requests are one round trip against the balance; a payment is needed only when the balance runs out, and it rides with the next request.
 
 ```text
 client                                   provider
-  get {h, a, x}            ---------->   has the blob, price <= x, balance covers it
+  get {h, a?, x}           ---------->   has the blob, price <= x, balance covers it
                            <----------   data {h, n, c, b} + n raw bytes
 
-  get {h, a, x}            ---------->   balance too low, or price > x
-                           <----------   quote {h, n, c, b, g, r, f, m, k, u}
-  pay {a, i, k, m, v}      ---------->   redeems the token at its mint
-                           <----------   paid {i, v, b}
-  get {h, a, x}            ---------->
-                           <----------   data ...
+  get {h, a?, x}           ---------->   balance too low, or price > x
+                           <----------   quote {h, n, c, b, g, r, f, m, k, u, o?}
+  get {h, a?, x, i, k, m, v} -------->   credits the payment, then charges
+                           <----------   data {h, n, c, b, i, v} + n raw bytes
 ```
 
 The hash is the proof of delivery: a client counts a charge only for bytes that hash to the name it asked for. There is no fair exchange. A client that pays before delivery risks at most the balance it chose to hold with that provider; a provider that serves before payment risks at most the grace it chose to give.
@@ -45,7 +43,7 @@ Decoders MUST ignore dictionary keys they do not know.
 | Nesting depth of lists and dictionaries inside the message dictionary | `4` |
 | Blob (`n`), in bytes | `16777216` |
 | Mint URL, in bytes | `512` |
-| Token (`v` in `pay`), in bytes | `49152` |
+| Token (`v` in `pay` or `get`), in bytes | `49152` |
 | Entries in `m` or `k` of a `quote` | `16` |
 | Other text fields, in bytes | `256` |
 
@@ -65,9 +63,11 @@ The key `t` holds the message type. Requests are `get` and `pay`; replies are `d
 
 | Key | Type | Meaning |
 | --- | --- | --- |
-| `a` | 32 bytes | Account id. |
+| `a` | 32 bytes | Account id. Absent on a carrier that authenticates the client. |
 | `h` | bytes | Hash name of the blob, with `y` if not SHA-256. |
 | `x` | int | Largest amount in msat the provider may charge for this blob. |
+| `l` | int | Hop budget: how many more times the request may be forwarded, `1` to `10`. Absent means `0`; `0` MUST NOT be sent. |
+| `i`, `k`, `m`, `v` | | A payment carried by the request, with the meanings they have in `pay`. All four or none. |
 
 ### `data`
 
@@ -78,6 +78,7 @@ The key `t` holds the message type. Requests are `get` and `pay`; replies are `d
 | `c` | int | Price of this blob in msat. |
 | `b` | int | Account balance in msat after this reply. May be negative. |
 | `d` | int | Present and `1` when this is a free repeat: `c` repeats an earlier charge and nothing new was charged. Absent otherwise. A receiver treats `0` as absent and any other value as `1`. |
+| `i`, `v` | 16 bytes, int | The payment id and the msat credited for a payment that the request carried. Both or neither. |
 
 ### `quote`
 
@@ -95,6 +96,8 @@ Sent instead of `data` when the provider has the blob and will not serve it with
 | `m` | list of text | URLs of the mints whose tokens the provider accepts. |
 | `k` | list of text | Payment methods the provider accepts. |
 | `u` | int | Smallest payment the provider accepts, in sat. |
+| `o` | 33 bytes | Optional. Compressed public key that tokens paid to this provider should be locked to ([NUT-11](https://github.com/cashubtc/nuts/blob/main/11.md)). |
+| `i`, `v` | 16 bytes, int | As in `data`, for a carried payment that was credited but did not cover the blob. |
 
 ### `none`
 
@@ -108,13 +111,13 @@ Sent instead of `data` when the provider has the blob and will not serve it with
 
 | Key | Type | Meaning |
 | --- | --- | --- |
-| `a` | 32 bytes | Account id to credit. |
+| `a` | 32 bytes | Account id to credit. Absent on a carrier that authenticates the client. |
 | `i` | 16 bytes | Payment id, chosen at random by the client for this payment. |
 | `k` | text | Payment method. |
 | `m` | text | URL of the mint that issued the token. |
 | `v` | text | The payment. For `cashu`, a serialized Cashu token in unit `sat`. |
 
-The only method defined is `cashu`.
+The only method defined is `cashu`. A client normally carries a payment in its next `get`; `pay` serves to resend a payment whose answer was lost, and carriers that sell something other than blobs.
 
 ### `paid`
 
@@ -156,17 +159,22 @@ computed without overflow. A `per_bytes` of `0` is read as `1`. A Cashu token of
 
 ## Provider behavior
 
+A request that names an account is charged to that account. One that names none is charged to an account the provider derives from the identity its carrier authenticated; without such an identity the provider answers `bad`.
+
 For a `get`:
 
-1. If the provider has no data for `h`, it replies `none`.
-2. If the account was charged for this blob recently, the provider MAY serve it again without a new charge: `data` with the original `c` and `d` = `1`. How long and how often is the provider's choice.
-3. If the price is `0`, the provider replies `data` with `c` = `0`. No account is needed.
-4. If the price is above `x`, or above the balance plus the grace the provider gives this client, the provider replies `quote` and charges nothing.
-5. Otherwise the provider charges the price to the account and replies `data`.
+1. If the provider has no data for `h`, it replies `none` and does not touch a carried payment. A provider that looks further passes the hop budget `l` on, less one hop for each forward.
+2. If the request carries a payment, the provider credits it as for a `pay` (below). If that fails, the provider answers with the `err` that a `pay` would get, with `i`, and charges nothing. Otherwise it includes `i` and `v` in its reply.
+3. If the account was charged for this blob recently, the provider MAY serve it again without a new charge: `data` with the original `c` and `d` = `1`. How long and how often is the provider's choice.
+4. If the price is `0`, the provider replies `data` with `c` = `0`. No account is needed.
+5. If the price is above `x`, or above the balance plus the grace the provider gives this client, the provider replies `quote` and charges nothing.
+6. Otherwise the provider charges the price to the account and replies `data`.
 
 A provider MUST NOT charge more than `x`, MUST NOT charge for a blob it does not send, and MUST send bytes that match `h`.
 
 A provider SHOULD give grace only to a client that its carrier authenticates, and to one account per such client. With `g` = `0` a provider serves only from a positive balance.
+
+A provider that names a lock key `o` accepts tokens locked to it and MAY also accept unlocked tokens.
 
 For a `pay`:
 
@@ -184,13 +192,15 @@ A client MUST verify that received bytes hash to the name it asked for. Bytes th
 
 A client keeps its own record of what it paid and what it was charged for verified blobs, and compares it with the balance the provider reports. A balance lower than that record explains is a loss. A client SHOULD stop paying a provider whose losses pass a limit it has set, and SHOULD limit what one provider may hold in advance and what it spends in total.
 
-A client that has sent a token and has no `paid` for it MUST keep the token and send the same `pay`, with the same payment id, before it pays that provider anything else. It SHOULD record a payment durably before sending it.
+A client that has sent a token and has no answer for it (a `paid`, or a reply with its `i` and `v`) MUST keep the token and send it again with the same payment id, carried or in a `pay`, before it pays that provider anything else. It SHOULD record a payment durably before sending it. A client SHOULD let only one request at a time carry a given token.
+
+A client accounts a credit in a `data` or `quote` reply exactly as a `paid`.
 
 A client MUST NOT trust a mint because a provider lists it. It pays only with mints it has chosen itself.
 
 A reply to a request that was sent before the client's latest acknowledged payment may predate that credit. A client SHOULD ignore the balance in such a reply.
 
-The account id is a bearer credential: whoever knows it can spend the balance. A client MUST send it only over a carrier that keeps it confidential, or keep the balance small where that is not possible.
+The account id is a bearer credential: whoever knows it can spend the balance. A client MUST send it only over a carrier that keeps it confidential, or keep the balance small where that is not possible. A client SHOULD lock tokens to a provider's key `o` when its wallet can.
 
 ## Carriers
 
@@ -202,7 +212,7 @@ On a reliable byte stream each message is preceded by its length as a 32-bit big
 
 ### FIPS
 
-Over FIPS the exchange is the TCP/FIPS service on port `39020`, advertised as the capability `hashtree.paid-blob/1`, with the byte-stream framing above. FIPS authenticates both ends, so a provider can give grace to an identity, and encrypts the session, so the account id is not exposed. The free blob service and its wire format are separate and unchanged.
+Over FIPS the exchange is the TCP/FIPS service on port `39020`, advertised as the capability `hashtree.paid-blob/1`, with the byte-stream framing above. FIPS authenticates both ends, so requests name no account and the client's identity is its account; the provider can give grace to that identity. The free blob service and its wire format are separate and unchanged.
 
 ### BitTorrent
 
@@ -276,6 +286,30 @@ wire: 64313a62693530303065313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a74343a
 
 ```text
 wire: 64313a6431313a7768793a207265706c6179313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a72363a7265706c6179313a74333a65727265
+```
+
+`get` on an authenticated carrier, with hop budget 3, authorising 4096 msat and carrying the payment above:
+
+```text
+wire: 64313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6b353a6361736875313a6c693365313a6d31373a68747470733a2f2f6d696e742e74657374313a74333a676574313a7631333a6361736875426578616d706c65313a7869343039366565
+```
+
+`pay` on an authenticated carrier:
+
+```text
+wire: 64313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6b353a6361736875313a6d31373a68747470733a2f2f6d696e742e74657374313a74333a706179313a7631333a6361736875426578616d706c6565
+```
+
+`data` for a request that carried a payment: credited 5000, charged 1000, balance 4000, followed by the four bytes `paid`:
+
+```text
+wire: 64313a62693430303065313a63693130303065313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6e693465313a74343a64617461313a766935303030656570616964
+```
+
+`quote` as above, with lock key `02` repeated 33 times and a carried payment credited 1000:
+
+```text
+wire: 64313a626931303065313a63693230343865313a66693130303065313a67693065313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6b6c353a636173687565313a6d6c31373a68747470733a2f2f6d696e742e7465737465313a6e693230393731353265313a6f33333a020202020202020202020202020202020202020202020202020202020202020202313a726c69316569313032346565313a74353a71756f7465313a75693165313a7669313030306565
 ```
 
 Prices:

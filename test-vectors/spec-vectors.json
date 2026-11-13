@@ -432,5 +432,122 @@
     "min_msat": "0",
     "bytes": "10",
     "price_msat": "24"
+  },
+  {
+    "name": "paid-get-forwarded-on-an-authenticated-carrier-carrying-a-payment",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "i": {
+        "hex": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+      },
+      "k": {
+        "text": "cashu"
+      },
+      "l": 3,
+      "m": {
+        "text": "https://mint.test"
+      },
+      "t": {
+        "text": "get"
+      },
+      "v": {
+        "text": "cashuBexample"
+      },
+      "x": 4096
+    },
+    "payload": "",
+    "wire": "64313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6b353a6361736875313a6c693365313a6d31373a68747470733a2f2f6d696e742e74657374313a74333a676574313a7631333a6361736875426578616d706c65313a7869343039366565"
+  },
+  {
+    "name": "paid-pay-on-an-authenticated-carrier",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "i": {
+        "hex": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+      },
+      "k": {
+        "text": "cashu"
+      },
+      "m": {
+        "text": "https://mint.test"
+      },
+      "t": {
+        "text": "pay"
+      },
+      "v": {
+        "text": "cashuBexample"
+      }
+    },
+    "payload": "",
+    "wire": "64313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6b353a6361736875313a6d31373a68747470733a2f2f6d696e742e74657374313a74333a706179313a7631333a6361736875426578616d706c6565"
+  },
+  {
+    "name": "paid-data-with-a-credit",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "b": 4000,
+      "c": 1000,
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "i": {
+        "hex": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+      },
+      "n": 4,
+      "t": {
+        "text": "data"
+      },
+      "v": 5000
+    },
+    "payload": "70616964",
+    "wire": "64313a62693430303065313a63693130303065313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6e693465313a74343a64617461313a766935303030656570616964"
+  },
+  {
+    "name": "paid-quote-with-a-lock-key-and-a-credit",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "b": 100,
+      "c": 2048,
+      "f": 1000,
+      "g": 0,
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "i": {
+        "hex": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+      },
+      "k": [
+        {
+          "text": "cashu"
+        }
+      ],
+      "m": [
+        {
+          "text": "https://mint.test"
+        }
+      ],
+      "n": 2097152,
+      "o": {
+        "hex": "020202020202020202020202020202020202020202020202020202020202020202"
+      },
+      "r": [
+        1,
+        1024
+      ],
+      "t": {
+        "text": "quote"
+      },
+      "u": 1,
+      "v": 1000
+    },
+    "payload": "",
+    "wire": "64313a626931303065313a63693230343865313a66693130303065313a67693065313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6b6c353a636173687565313a6d6c31373a68747470733a2f2f6d696e742e7465737465313a6e693230393731353265313a6f33333a020202020202020202020202020202020202020202020202020202020202020202313a726c69316569313032346565313a74353a71756f7465313a75693165313a7669313030306565"
   }
 ]
