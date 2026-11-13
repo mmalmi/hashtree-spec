@@ -209,5 +209,228 @@
     "secret": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
     "masked": "02030001060704050a0b08090e0f0c0d12131011161714151a1b18191e1f1c1d22",
     "key_id": "5d8fcfefa9aeeb71"
+  },
+  {
+    "name": "paid-get-sha256",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "a": {
+        "hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      },
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "t": {
+        "text": "get"
+      },
+      "x": 16384
+    },
+    "payload": "",
+    "wire": "64313a6133323a000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a74333a676574313a786931363338346565"
+  },
+  {
+    "name": "paid-get-sha1",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "a": {
+        "hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      },
+      "h": {
+        "hex": "404142434445464748494a4b4c4d4e4f50515253"
+      },
+      "t": {
+        "text": "get"
+      },
+      "x": 1,
+      "y": {
+        "text": "sha1"
+      }
+    },
+    "payload": "",
+    "wire": "64313a6133323a000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f313a6832303a404142434445464748494a4b4c4d4e4f50515253313a74333a676574313a78693165313a79343a7368613165"
+  },
+  {
+    "name": "paid-pay-cashu",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "a": {
+        "hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      },
+      "i": {
+        "hex": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+      },
+      "k": {
+        "text": "cashu"
+      },
+      "m": {
+        "text": "https://mint.test"
+      },
+      "t": {
+        "text": "pay"
+      },
+      "v": {
+        "text": "cashuBexample"
+      }
+    },
+    "payload": "",
+    "wire": "64313a6133323a000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a6b353a6361736875313a6d31373a68747470733a2f2f6d696e742e74657374313a74333a706179313a7631333a6361736875426578616d706c6565"
+  },
+  {
+    "name": "paid-quote",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "b": 100,
+      "c": 2048,
+      "f": 1000,
+      "g": 0,
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "k": [
+        {
+          "text": "cashu"
+        }
+      ],
+      "m": [
+        {
+          "text": "https://mint.test"
+        }
+      ],
+      "n": 2097152,
+      "r": [
+        1,
+        1024
+      ],
+      "t": {
+        "text": "quote"
+      },
+      "u": 1
+    },
+    "payload": "",
+    "wire": "64313a626931303065313a63693230343865313a66693130303065313a67693065313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6b6c353a636173687565313a6d6c31373a68747470733a2f2f6d696e742e7465737465313a6e693230393731353265313a726c69316569313032346565313a74353a71756f7465313a7569316565"
+  },
+  {
+    "name": "paid-data-charged",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "b": 2952,
+      "c": 2048,
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "n": 10,
+      "t": {
+        "text": "data"
+      }
+    },
+    "payload": "626c6f62206279746573",
+    "wire": "64313a62693239353265313a63693230343865313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6e69313065313a74343a6461746165626c6f62206279746573"
+  },
+  {
+    "name": "paid-data-free-repeat-on-a-debt",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "b": -1000,
+      "c": 1000,
+      "d": 1,
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "n": 6,
+      "t": {
+        "text": "data"
+      }
+    },
+    "payload": "000102ff6564",
+    "wire": "64313a62692d3130303065313a63693130303065313a64693165313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a6e693665313a74343a6461746165000102ff6564"
+  },
+  {
+    "name": "paid-none",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "h": {
+        "hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f"
+      },
+      "t": {
+        "text": "none"
+      }
+    },
+    "payload": "",
+    "wire": "64313a6833323a808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f313a74343a6e6f6e6565"
+  },
+  {
+    "name": "paid-paid",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "b": 5000,
+      "i": {
+        "hex": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+      },
+      "t": {
+        "text": "paid"
+      },
+      "v": 5000
+    },
+    "payload": "",
+    "wire": "64313a62693530303065313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a74343a70616964313a7669353030306565"
+  },
+  {
+    "name": "paid-err-replay",
+    "kind": "paid-message",
+    "document": "specs/paid-retrieval.md",
+    "fields": {
+      "d": {
+        "text": "why: replay"
+      },
+      "i": {
+        "hex": "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+      },
+      "r": {
+        "text": "replay"
+      },
+      "t": {
+        "text": "err"
+      }
+    },
+    "payload": "",
+    "wire": "64313a6431313a7768793a207265706c6179313a6931363af0f1f2f3f4f5f6f7f8f9fafbfcfdfeff313a72363a7265706c6179313a74333a65727265"
+  },
+  {
+    "name": "paid-price-6145-bytes",
+    "kind": "paid-price",
+    "document": "specs/paid-retrieval.md",
+    "msat": "1",
+    "per_bytes": "1024",
+    "min_msat": "5",
+    "bytes": "6145",
+    "price_msat": "7"
+  },
+  {
+    "name": "paid-price-2097152-bytes",
+    "kind": "paid-price",
+    "document": "specs/paid-retrieval.md",
+    "msat": "1",
+    "per_bytes": "1024",
+    "min_msat": "1000",
+    "bytes": "2097152",
+    "price_msat": "2048"
+  },
+  {
+    "name": "paid-price-10-bytes",
+    "kind": "paid-price",
+    "document": "specs/paid-retrieval.md",
+    "msat": "7",
+    "per_bytes": "3",
+    "min_msat": "0",
+    "bytes": "10",
+    "price_msat": "24"
   }
 ]

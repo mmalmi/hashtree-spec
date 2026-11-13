@@ -51,5 +51,14 @@
     "repository": "https://github.com/hzrd149/blossom",
     "revision": "237ef419cfb2161585c9327df3755c038002c618",
     "path": "implementations/hashtree/hashtree-encryption.md"
+  },
+  "paid_retrieval": {
+    "repository": "https://github.com/mmalmi/hashtree",
+    "revision": "d308b2f73472ddb291d26bcaa4314ce9cb3e21e4",
+    "paths": [
+      "docs/paid-retrieval.md",
+      "test-vectors/paid-retrieval-vectors.json"
+    ],
+    "destination": "specs/paid-retrieval.md"
   }
 }

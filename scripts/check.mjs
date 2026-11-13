@@ -5,6 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodeManifest } from './manifest.mjs';
 import { encodeBech32 } from './bech32.mjs';
+import { encodeBencode } from './bencode.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -76,13 +77,29 @@ for (const vector of vectors) {
     for (const field of ['root_hash', 'payload', 'nhash']) {
       assert(document.includes(`${field}: ${vector[field]}`));
     }
+  } else if (vector.kind === 'paid-message') {
+    const header = encodeBencode(vector.fields);
+    assert(header.length <= 65536, vector.name);
+    const payload = Buffer.from(vector.payload, 'hex');
+    assert.equal(Buffer.concat([header, payload]).toString('hex'), vector.wire, vector.name);
+    if (vector.fields.t.text === 'data') assert.equal(vector.fields.n, payload.length, vector.name);
+    else assert.equal(payload.length, 0, vector.name);
+    const digest = { undefined: 32, sha1: 20 }[vector.fields.y?.text];
+    if (vector.fields.h) assert.equal(Buffer.from(vector.fields.h.hex, 'hex').length, digest, vector.name);
+    assert(document.includes(`wire: ${vector.wire}`), vector.name);
+  } else if (vector.kind === 'paid-price') {
+    const [msat, perBytes, minimum, bytes] = ['msat', 'per_bytes', 'min_msat', 'bytes'].map(key => BigInt(vector[key]));
+    const per = perBytes === 0n ? 1n : perBytes;
+    const due = (bytes * msat + per - 1n) / per;
+    assert.equal(String(due > minimum ? due : minimum), vector.price_msat, vector.name);
+    assert(document.includes(`| \`${vector.bytes}\` | \`price_msat: ${vector.price_msat}\` |`), vector.name);
   } else {
     throw new Error(`Unknown vector kind: ${vector.kind}`);
   }
   console.log(`PASS ${vector.name}`);
 }
 
-assert.equal(vectors.length, 12, 'Update the expected count when adding reviewed vectors');
+assert.equal(vectors.length, 24, 'Update the expected count when adding reviewed vectors');
 const docs = ['README.md', 'CONTRIBUTING.md', ...readdirSync(resolve(root, 'specs')).map(name => `specs/${name}`)];
 let links = 0;
 for (const path of docs) {
@@ -101,7 +118,13 @@ for (const path of docs) {
 
 const sources = JSON.parse(read('sources.json'));
 assert.equal(sources.proposals.length, 4);
-for (const source of [...sources.proposals, sources.license, sources.implementation, sources.encryption_suites]) {
+for (const source of [
+  ...sources.proposals,
+  sources.license,
+  sources.implementation,
+  sources.encryption_suites,
+  sources.paid_retrieval,
+]) {
   assert.match(source.revision, /^[0-9a-f]{40}$/);
   if (source.sha256) assert.match(source.sha256, /^[0-9a-f]{64}$/);
   if (source.destination) assert(existsSync(resolve(root, source.destination)));

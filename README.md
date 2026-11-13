@@ -51,6 +51,7 @@ migration discussion before adoption.
 | [Chunked files and directory fanout](specs/chunked-files-and-fanout.md) | Ordered chunks, recursive files, and typed directory indexes |
 | [References](specs/references.md) | `htree` URLs, `nhash`, Nostr roots, and visibility |
 | [Migration and compatibility](specs/migration.md) | Optional historical formats, their validation rules, and migration guidance |
+| [Paid retrieval](specs/paid-retrieval.md) | Optional exchange for paying a provider for blobs: messages, prices, accounts, and carriers |
 
 The capitalized requirement words in these documents use
 [BCP 14](https://www.rfc-editor.org/info/bcp14).
@@ -68,6 +69,10 @@ need to understand Hashtree. Public storage endpoints receive no decryption
 keys. Discovery, peer routing, library APIs, and application deployment are
 outside this initial specification set.
 
+[Paid retrieval](specs/paid-retrieval.md) is an optional, separate exchange. It
+is a first draft from one implementation, was not part of the source proposals,
+and changes nothing about stored bytes or free retrieval.
+
 ## Test vectors
 
 [Machine-readable vectors](test-vectors/spec-vectors.json) reproduce the bytes
@@ -79,7 +84,8 @@ node scripts/check.mjs
 
 The check uses only Node's standard library. It independently encodes the
 manifest vectors, reproduces CHK and randomized encryption, checks link-key masks and Bech32
-reference, and checks document links and vector consistency. It is a focused
+reference, re-encodes the paid-retrieval messages and prices, and checks document links
+and vector consistency. It is a focused
 vector check, not a complete conformance suite for a library or transport.
 
 ## Implementations and collaboration
