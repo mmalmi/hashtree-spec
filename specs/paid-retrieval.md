@@ -220,7 +220,9 @@ This section is informative; no implementation exists. A peer advertises `ht_pay
 
 ### HTTP
 
-An HTTP mapping is being implemented and is not part of this draft yet. It is expected to carry these messages over one endpoint, and to answer clients that do not know this exchange with the `402` flow of Blossom BUD-07 and Cashu NUT-24.
+A provider serves the exchange at `POST <base>/paid-blob`. The request body is one encoded request, sent as `application/octet-stream` and at most `65536` bytes. Every answer of the exchange, `quote` and `err` included, is a `200` response whose body is one encoded reply, with `Cache-Control: no-store`. Any other status is a carrier error. HTTP does not authenticate the client, so requests name an account.
+
+Mapping this exchange onto the `402` responses of Blossom BUD-07 and Cashu NUT-24 for clients that do not know it is future work.
 
 ## Security considerations
 

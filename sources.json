@@ -54,7 +54,7 @@
   },
   "paid_retrieval": {
     "repository": "https://github.com/mmalmi/hashtree",
-    "revision": "d308b2f73472ddb291d26bcaa4314ce9cb3e21e4",
+    "revision": "1cd1e930cb8c847e6a27f7d0e50782ae50560a3d",
     "paths": [
       "docs/paid-retrieval.md",
       "test-vectors/paid-retrieval-vectors.json"
